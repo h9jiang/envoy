@@ -227,6 +227,7 @@ def envoy_dependencies(skip_targets = []):
     _repository_impl("bazel_compdb")
     _repository_impl("envoy_build_tools")
     _repository_impl("rules_cc")
+    _org_cloudabi_bazel_third_party()
     _org_unicode_icuuc()
 
     # Unconditional, since we use this only for compiler-agnostic fuzzing utils.
@@ -929,6 +930,9 @@ filegroup(
         build_file_content = BUILD_ALL_CONTENT,
         **_get_location("kafka_python_client")
     )
+
+def _org_cloudabi_bazel_third_party():
+    _repository_impl("org_cloudabi_bazel_third_party")
 
 def _org_unicode_icuuc():
     _repository_impl(
