@@ -479,7 +479,7 @@ def _com_github_datadog_dd_opentracing_cpp():
 
 def _com_github_rules_proto_grpc():
     # Require rules proto grpc as an indirect dependency as it is needed by the
-    # direct dependency com_github_cloudevents_sdk. 
+    # direct dependency com_github_cloudevents_sdk.
     _repository_impl("rules_proto_grpc")
 
 def _com_github_tencent_rapidjson():

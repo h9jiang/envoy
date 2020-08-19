@@ -2,10 +2,13 @@ load(
     "//bazel:envoy_build_system.bzl",
     "envoy_cc_extension",
     "envoy_cc_library",
+    "envoy_extension_package",
     "envoy_package",
 )
 
 licenses(["notice"])  # Apache 2
+
+envoy_extension_package()
 
 envoy_package()
 
@@ -26,6 +29,7 @@ envoy_cc_library(
         "//source/common/stats:symbol_table_lib",
         "//source/extensions/filters/http:well_known_names",
         "//source/extensions/filters/http/common:pass_through_filter_lib",
+        "@com_github_cloudevents_sdk//v1/protocol_binding:binder_lib",
         "@com_google_googleapis//google/pubsub/v1:pubsub_cc_proto",
         "@envoy_api//envoy/extensions/filters/http/gcp_events_convert/v3:pkg_cc_proto",
     ],

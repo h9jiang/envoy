@@ -33,7 +33,8 @@ GcpEventsConvertFilterConfig::GcpEventsConvertFilterConfig(
 GcpEventsConvertFilter::GcpEventsConvertFilter(GcpEventsConvertFilterConfigSharedPtr config)
     : config_(config) {}
 
-GcpEventsConvertFilter::GcpEventsConvertFilter(GcpEventsConvertFilterConfigSharedPtr config, bool has_cloud_event)
+GcpEventsConvertFilter::GcpEventsConvertFilter(GcpEventsConvertFilterConfigSharedPtr config,
+                                               bool has_cloud_event)
     : has_cloud_event_(has_cloud_event), config_(config) {}
 
 void GcpEventsConvertFilter::onDestroy() {}
@@ -59,7 +60,7 @@ Http::FilterDataStatus GcpEventsConvertFilter::decodeData(Buffer::Instance&, boo
 
   // For any request body that is not the end of HTTP request and not empty
   // Buffer the current HTTP request's body
-  if (!end_stream) 
+  if (!end_stream)
     return Http::FilterDataStatus::StopIterationAndBuffer;
 
   if (decoder_callbacks_ == nullptr) {
@@ -76,7 +77,7 @@ Http::FilterDataStatus GcpEventsConvertFilter::decodeData(Buffer::Instance&, boo
   ReceivedMessage received_message;
   Envoy::ProtobufUtil::JsonParseOptions parse_option;
   auto status = Envoy::ProtobufUtil::JsonStringToMessage(buffered->toString(), &received_message,
-                                                          parse_option);
+                                                         parse_option);
 
   if (!status.ok()) {
     // buffered data didn't successfully converted to proto. Continue
