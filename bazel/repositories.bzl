@@ -199,6 +199,7 @@ def envoy_dependencies(skip_targets = []):
     _com_github_libevent_libevent()
     _com_github_luajit_luajit()
     _com_github_moonjit_moonjit()
+    _com_github_nelhage_rules_boost()
     _com_github_nghttp2_nghttp2()
     _com_github_nodejs_http_parser()
     _com_github_tencent_rapidjson()
@@ -422,6 +423,9 @@ cc_library(
         patches = ["@envoy//bazel:antlr.patch"],
         **location
     )
+
+def _com_github_nelhage_rules_boost():
+    _repository_impl("com_github_nelhage_rules_boost")
 
 def _com_github_nghttp2_nghttp2():
     location = _get_location("com_github_nghttp2_nghttp2")
