@@ -86,7 +86,7 @@ Http::FilterDataStatus GcpEventsConvertFilter::decodeData(Buffer::Instance&, boo
     return Http::FilterDataStatus::Continue;
   }
 
-  // TODO(#3): Use Cloud Event SDK to convert Pubsub Message to HTTP Binding
+  // TODO(#6): Use Cloud Event SDK to convert Pubsub Message to HTTP Binding
   // HttpRequest http_req = Binder.bind(cloudevents);
   HttpRequest http_req;
   http_req.base().set("content-type", "application/text");
@@ -124,7 +124,6 @@ bool GcpEventsConvertFilter::isCloudEvent(const Http::RequestHeaderMap& headers)
 }
 
 absl::Status GcpEventsConvertFilter::updateHeader(const HttpRequest& http_req) {
-  // TODO(#3): implement detail logic for update Header
   for (auto it = http_req.base().begin(); it != http_req.base().end(); ++it) {
     Http::LowerCaseString header_key((*it).name_string().to_string());
     std::string header_val = (*it).value().to_string();
