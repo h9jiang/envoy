@@ -681,6 +681,17 @@ DEPENDENCY_REPOSITORIES_SPEC = dict(
         urls = ["https://github.com/dpkp/kafka-python/archive/{version}.tar.gz"],
         use_category = ["test"],
     ),
+    org_cloudabi_bazel_third_party = dict(
+        project_name = "Cloudabi bazel third party",
+        project_url = "https://github.com/NuxiNL/bazel-third-party",
+        version = "91ca2167219c612a89334fa09ddf15fbdc5d0592",
+        sha256 = "639ac8f97673dcde752f02bc4744409bc68cb1556972946d7818e7a17e141e50",
+        strip_prefix = "bazel-third-party-91ca2167219c612a89334fa09ddf15fbdc5d0592",
+        # 2020-08-15
+        urls = ["https://github.com/NuxiNL/bazel-third-party/archive/91ca2167219c612a89334fa09ddf15fbdc5d0592.tar.gz"],
+        use_category = ["dataplane"],
+        cpe = "N/A",
+    ),
     org_unicode_icuuc = dict(
         project_name = "International Components for Unicode",
         project_url = "https://github.com/unicode-org/icu",
