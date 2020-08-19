@@ -14,8 +14,6 @@ namespace Extensions {
 namespace HttpFilters {
 namespace GcpEventsConvert {
 
-typedef boost::beast::http::request<boost::beast::http::string_body> HttpRequest;
-
 struct GcpEventsConvertFilterConfig : public Router::RouteSpecificFilterConfig {
   GcpEventsConvertFilterConfig(
       const envoy::extensions::filters::http::gcp_events_convert::v3::GcpEventsConvert&
@@ -47,6 +45,8 @@ public:
   void setDecoderFilterCallbacks(Http::StreamDecoderFilterCallbacks& callbacks) override;
 
 private:
+  using HttpRequest = boost::beast::http::request<boost::beast::http::string_body>;
+  
   bool isCloudEvent(const Http::RequestHeaderMap& headers) const;
 
   // modify the data of HTTP request
