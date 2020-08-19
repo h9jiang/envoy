@@ -724,6 +724,17 @@ DEPENDENCY_REPOSITORIES_SPEC = dict(
         urls = ["https://github.com/emscripten-core/emsdk/archive/{version}.tar.gz"],
         use_category = ["build"],
     ),
+    rules_proto_grpc = dict(
+        project_name = "Rules proto grpc",
+        project_url = "https://github.com/rules-proto-grpc/rules_proto_grpc",
+        version = "1.0.2",
+        sha256 = "5f0f2fc0199810c65a2de148a52ba0aff14d631d4e8202f41aff6a9d590a471b",
+        strip_prefix = "rules_proto_grpc-1.0.2",
+        # Changes through 2020-08-15
+        urls = ["https://github.com/rules-proto-grpc/rules_proto_grpc/archive/1.0.2.tar.gz"],
+        use_category = ["dataplane"],
+        cpe = "N/A",
+    ),
     rules_antlr = dict(
         project_name = "ANTLR Rules for Bazel",
         project_url = "https://github.com/marcohu/rules_antlr",
