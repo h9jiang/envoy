@@ -202,6 +202,7 @@ def envoy_dependencies(skip_targets = []):
     _com_github_moonjit_moonjit()
     _com_github_nghttp2_nghttp2()
     _com_github_nodejs_http_parser()
+    _com_github_rules_proto_grpc()
     _com_github_tencent_rapidjson()
     _com_google_absl()
     _com_google_googletest()
@@ -474,6 +475,11 @@ def _com_github_datadog_dd_opentracing_cpp():
         name = "dd_opentracing_cpp",
         actual = "@com_github_datadog_dd_opentracing_cpp//:dd_opentracing_cpp",
     )
+
+def _com_github_rules_proto_grpc():
+    # Require rules proto grpc as an indirect dependency as it is needed by the
+    # direct dependency com_github_cloudevents_sdk. 
+    _repository_impl("rules_proto_grpc")
 
 def _com_github_tencent_rapidjson():
     _repository_impl(
