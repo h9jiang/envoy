@@ -27,6 +27,7 @@ envoy_cc_library(
         "//source/extensions/filters/http:well_known_names",
         "//source/extensions/filters/http/common:pass_through_filter_lib",
         "@boost//:beast",
+        "@com_github_cloudevents_sdk//v1/protocol_binding:binder_lib",
         "@com_google_googleapis//google/pubsub/v1:pubsub_cc_proto",
         "@envoy_api//envoy/extensions/filters/http/gcp_events_convert/v3:pkg_cc_proto",
     ],
