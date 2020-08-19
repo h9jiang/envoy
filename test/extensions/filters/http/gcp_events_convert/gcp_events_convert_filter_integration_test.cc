@@ -90,7 +90,19 @@ TEST_P(GcpEventsConvertIntegrationTest, CloudEventNormalRequest) {
   ASSERT_TRUE(request_stream->waitForEndStream(*dispatcher_));
   response->waitForEndStream();
   // filter should replace body with given string
-  ASSERT_EQ(request_stream->body().toString(), "This is a example body");
+  ASSERT_EQ(request_stream->body().toString(), "certain body string text");
+  auto& request_headers = request_stream->headers();
+  // filter should replace headers content-type with `ce-datecontenttype`
+  ASSERT_EQ("application/text", request_headers.getContentTypeValue());
+  // filter should insert ce attribute into header (except for `ce-datacontenttype`)
+  ASSERT_THAT(request_headers.get(Http::LowerCaseString("ce-datacontenttype")), testing::IsNull());
+  ASSERT_EQ("1.0",
+            request_headers.get(Http::LowerCaseString("ce-specversion"))->value().getStringView());
+  ASSERT_EQ("com.example.some_event",
+            request_headers.get(Http::LowerCaseString("ce-type"))->value().getStringView());
+  ASSERT_EQ("2020-03-10T03:56:24Z",
+            request_headers.get(Http::LowerCaseString("ce-time"))->value().getStringView());
+
   codec_client->close();
 }
 
