@@ -184,6 +184,7 @@ def envoy_dependencies(skip_targets = []):
     # dependencies and name conflicts.
     _com_github_c_ares_c_ares()
     _com_github_circonus_labs_libcircllhist()
+    _com_github_cloudevents_sdk()
     _com_github_cyan4973_xxhash()
     _com_github_datadog_dd_opentracing_cpp()
     _com_github_mirror_tclap()
@@ -288,6 +289,9 @@ def _com_github_c_ares_c_ares():
         name = "ares",
         actual = "@envoy//bazel/foreign_cc:ares",
     )
+
+def _com_github_cloudevents_sdk():
+    _repository_impl("com_github_cloudevents_sdk")
 
 def _com_github_cyan4973_xxhash():
     _repository_impl(
