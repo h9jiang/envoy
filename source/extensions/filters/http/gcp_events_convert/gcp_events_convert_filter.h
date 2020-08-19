@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/beast/http.hpp>
 #include <memory>
 #include <string>
 
@@ -12,6 +13,8 @@ namespace Envoy {
 namespace Extensions {
 namespace HttpFilters {
 namespace GcpEventsConvert {
+
+typedef boost::beast::http::request<boost::beast::http::string_body> HttpRequest;
 
 struct GcpEventsConvertFilterConfig : public Router::RouteSpecificFilterConfig {
   GcpEventsConvertFilterConfig(
