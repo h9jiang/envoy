@@ -52,7 +52,7 @@ private:
   // modify the data of HTTP request
   // 1. drain buffered data
   // 2. write cloud event data
-  absl::Status updateBody(HttpRequest& request);
+  absl::Status updateBody(const HttpRequest& request);
 
   // modify the header of HTTP request
   // 1. replace header's content type with ce-datacontenttype

@@ -124,19 +124,19 @@ bool GcpEventsConvertFilter::isCloudEvent(const Http::RequestHeaderMap& headers)
 }
 
 absl::Status GcpEventsConvertFilter::updateHeader(const HttpRequest& http_req) {
-  for (auto it = http_req.base().begin(); it != http_req.base().end(); ++it) {
-    Http::LowerCaseString header_key((*it).name_string().to_string());
-    std::string header_val = (*it).value().to_string();
+  for (const auto& header : http_req.base()) {
+    Http::LowerCaseString header_key(header.name_string().to_string());
+    // std::string header_val = header.value().to_string();
     if (header_key == Http::LowerCaseString("content-type")) {
-      request_headers_->setContentType(header_val);
+      request_headers_->setContentType(header.value().to_string());
     } else {
-      request_headers_->addCopy(header_key, header_val);
+      request_headers_->addCopy(header_key, header.value().to_string());
     }
   }
   return absl::OkStatus();
 }
 
-absl::Status GcpEventsConvertFilter::updateBody(HttpRequest& http_req) {
+absl::Status GcpEventsConvertFilter::updateBody(const HttpRequest& http_req) {
   decoder_callbacks_->modifyDecodingBuffer([&http_req](Buffer::Instance& buffered) {
     // drain the current buffered instance
     buffered.drain(buffered.length());
