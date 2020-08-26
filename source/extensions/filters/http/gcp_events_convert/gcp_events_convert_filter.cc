@@ -17,6 +17,7 @@
 #include "common/protobuf/utility.h"
 
 #include "google/pubsub/v1/pubsub.pb.h"
+#include "external/com_github_cloudevents_sdk/v1/protocol_binding/pubsub_binder.h"
 
 namespace Envoy {
 namespace Extensions {
@@ -25,6 +26,8 @@ namespace GcpEventsConvert {
 
 using google::pubsub::v1::PubsubMessage;
 using google::pubsub::v1::ReceivedMessage;
+using cloudevents::binding::Binder;
+using io::cloudevents::v1::CloudEvent;
 
 GcpEventsConvertFilterConfig::GcpEventsConvertFilterConfig(
     const envoy::extensions::filters::http::gcp_events_convert::v3::GcpEventsConvert& proto_config)
@@ -96,7 +99,8 @@ Http::FilterDataStatus GcpEventsConvertFilter::decodeData(Buffer::Instance&, boo
   http_req.base().set("ce-time", "2020-03-10T03:56:24Z");
   http_req.body() = "certain body string text";
 
-  absl::Status update_status = updateHeader(http_req);
+  // TODO(#3): Use Cloud Event SDK to convert Pubsub Message to HTTP Binding
+  absl::Status update_status = updateHeader();
   if (!update_status.ok()) {
     ENVOY_LOG(warn, "Gcp Events Convert Filter log: update header {}", update_status.ToString());
     return Http::FilterDataStatus::Continue;
