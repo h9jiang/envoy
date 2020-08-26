@@ -87,7 +87,7 @@ TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithCloudEvent) {
   attributes["ce-id"] = "1234-1234-1234";
   attributes["ce-source"] = "/mycontext/subcontext";
   attributes["ce-datacontenttype"] = "application/text; charset=utf-8";
-  pubsub_message.set_data("cloud event data payload");
+  pubsub_message.set_data("Y2xvdWQgZXZlbnQgZGF0YSBwYXlsb2Fk");
 
   // create a json string of received message
   std::string json_string;
@@ -103,7 +103,7 @@ TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithCloudEvent) {
   Buffer::OwnedImpl data2;
   EXPECT_EQ(Http::FilterDataStatus::Continue, filter.decodeData(data2, true));
 
-  ASSERT_EQ(buffer.toString(), "This is a example body");
+  ASSERT_EQ(buffer.toString(), "cloud event data payload");
 }
 
 TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithRandomBody) {
