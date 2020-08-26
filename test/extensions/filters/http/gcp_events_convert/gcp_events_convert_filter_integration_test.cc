@@ -71,7 +71,10 @@ TEST_P(GcpEventsConvertIntegrationTest, CloudEventNormalRequest) {
   attributes["ce-id"] = "1234-1234-1234";
   attributes["ce-source"] = "/mycontext/subcontext";
   attributes["ce-datacontenttype"] = "application/text; charset=utf-8";
-  pubsub_message.set_data("cloud event data payload");
+  pubsub_message.set_data("Y2xvdWQgZXZlbnQgZGF0YSBwYXlsb2Fk");
+  pubsub_message.set_message_id("136969346945");
+  pubsub_message.mutable_publish_time()->ParseFromString("2014-10-02T15:01:23Z");
+  pubsub_message.set_ordering_key("");
 
   // create a json string of received message
   std::string json_string;
@@ -93,10 +96,10 @@ TEST_P(GcpEventsConvertIntegrationTest, CloudEventNormalRequest) {
   ASSERT_TRUE(request_stream->waitForEndStream(*dispatcher_));
   response->waitForEndStream();
   // filter should replace body with given string
-  EXPECT_EQ(request_stream->body().toString(), "certain body string text");
+  EXPECT_EQ("cloud event data payload", request_stream->body().toString());
   auto& request_headers = request_stream->headers();
   // filter should replace headers content-type with `ce-datecontenttype`
-  EXPECT_EQ("application/text", request_headers.getContentTypeValue());
+  EXPECT_EQ("application/text; charset=utf-8", request_headers.getContentTypeValue());
   // filter should insert ce attribute into header (except for `ce-datacontenttype`)
   EXPECT_THAT(request_headers.get(Http::LowerCaseString("ce-datacontenttype")), testing::IsNull());
   EXPECT_EQ("1.0",
@@ -139,7 +142,10 @@ TEST_P(GcpEventsConvertIntegrationTest, CloudEventPartialMissingRequest) {
   attributes["ce-id"] = "1234-1234-1234";
   attributes["ce-source"] = "/mycontext/subcontext";
   attributes["ce-datacontenttype"] = "application/text; charset=utf-8";
-  pubsub_message.set_data("cloud event data payload");
+  pubsub_message.set_data("Y2xvdWQgZXZlbnQgZGF0YSBwYXlsb2Fk");
+  pubsub_message.set_message_id("136969346945");
+  pubsub_message.mutable_publish_time()->ParseFromString("2014-10-02T15:01:23Z");
+  pubsub_message.set_ordering_key("");
 
   // create a json string of received message
   std::string full_json_string;
