@@ -17,7 +17,9 @@
 #include "common/protobuf/utility.h"
 
 #include "google/pubsub/v1/pubsub.pb.h"
+#include "external/com_github_cloudevents_sdk/v1/protocol_binding/binder.h"
 #include "external/com_github_cloudevents_sdk/v1/protocol_binding/pubsub_binder.h"
+#include "external/com_github_cloudevents_sdk/v1/protocol_binding/http_binder.h"
 
 namespace Envoy {
 namespace Extensions {
@@ -89,17 +91,51 @@ Http::FilterDataStatus GcpEventsConvertFilter::decodeData(Buffer::Instance&, boo
     return Http::FilterDataStatus::Continue;
   }
 
-  // TODO(#3): Use Cloud Event SDK to convert Pubsub Message to HTTP Binding
-  // HttpRequest http_req = Binder.bind(cloudevents);
-  HttpRequest http_req;
-  http_req.base().set("content-type", "application/text");
-  http_req.base().set("ce-specversion", "1.0");
-  http_req.base().set("ce-type", "com.example.some_event");
-  http_req.base().set("ce-time", "2020-03-10T03:56:24Z");
-  http_req.body() = "certain body string text";
+  // TODO(#2): Step 5 & 6 Use Cloud Event SDK to convert Pubsub Message to HTTP Binding
+  const PubsubMessage& pubsub_message = received_message.message();
+  Binder<PubsubMessage> pubsub_binder;
+
+  // -------------------- test ---------------------------
+  std::cout << "======== data ========" << std::endl;
+  std::cout << pubsub_message.data() << std::endl;
+  std::cout << "===== attributes =====" << std::endl;
+  for (auto i : pubsub_message.attributes()) {
+    std::cout << i.first << "\t : " << i.second << std::endl;
+  }
+  // -------------------- test ---------------------------
+  
+  cloudevents_absl::StatusOr<CloudEvent> ce = pubsub_binder.Unbind(pubsub_message);
+  if (!ce.ok()) {
+    ENVOY_LOG(warn, "Gcp Events Convert Filter log: SDK pubsub unbind error");
+    return Http::FilterDataStatus::Continue;
+  }
+  CloudEvent& cloud_event = *ce;
+  // -------------------- test --------------------------
+  std::cout << " ======== cloud event ======== " << std::endl;
+  std::cout << "id \t : " << cloud_event.id() << std::endl 
+            << "source \t : " << cloud_event.source() << std::endl 
+            << "spec_version \t : " << cloud_event.spec_version() << std::endl 
+            << "type \t : " << cloud_event.type() << std::endl ;
+  // -------------------- test ---------------------------
+
+  Binder<HttpRequest> http_binder;
+  cloudevents_absl::StatusOr<HttpRequest> req = http_binder.Bind(cloud_event);
+  if (!req.ok()) {
+    ENVOY_LOG(warn, "Gcp Events Convert Filter log: SDK Http bind error {}",req.status());
+    return Http::FilterDataStatus::Continue;
+  }
+  HttpRequest& http_req = *req;
+
+  // -------------------- test ---------------------------
+  std::cout << "========= http request ==========" << std::endl;
+  std::cout << http_req.base()["content-type"] << std::endl
+            << http_req.base()["ce-id"] << std::endl
+            << http_req.base()["ce-specversion"] << std::endl
+            << http_req.base()["ce-type"] << std::endl;
+  // -------------------- test ---------------------------
 
   // TODO(#3): Use Cloud Event SDK to convert Pubsub Message to HTTP Binding
-  absl::Status update_status = updateHeader();
+  absl::Status update_status = updateHeader(http_req);
   if (!update_status.ok()) {
     ENVOY_LOG(warn, "Gcp Events Convert Filter log: update header {}", update_status.ToString());
     return Http::FilterDataStatus::Continue;
