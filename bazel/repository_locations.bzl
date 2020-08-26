@@ -159,11 +159,11 @@ DEPENDENCY_REPOSITORIES_SPEC = dict(
     com_github_cloudevents_sdk = dict(
         project_name = "Cloudevents SDK",
         project_url = "https://github.com/h9jiang/cloudevents-sdk-cpp",
-        version = "77c86580839aa1715a9a55541f0b6716c7d5266b",
-        sha256 = "e6c10d160e1f412b44245a5792515cd8055021740c2ceb94ec261f9f35c05e4a",
-        strip_prefix = "cloudevents-sdk-cpp-77c86580839aa1715a9a55541f0b6716c7d5266b",
+        version = "eb2e2e9d81aa0a10175473b2bfe1f847e2e027a1",
+        sha256 = "2864240185b62ca51fa9ceb5a61d1fe6f5f3b12d834d0a2e45e95ddd41b8537c",
+        strip_prefix = "cloudevents-sdk-cpp-{version}",
         # 2020-08-17
-        urls = ["https://github.com/h9jiang/cloudevents-sdk-cpp/archive/77c86580839aa1715a9a55541f0b6716c7d5266b.tar.gz"],
+        urls = ["https://github.com/h9jiang/cloudevents-sdk-cpp/archive/{version}.tar.gz"],
         use_category = ["dataplane"],
         cpe = "N/A",
     ),
