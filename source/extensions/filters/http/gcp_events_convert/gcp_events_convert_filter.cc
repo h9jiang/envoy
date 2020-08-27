@@ -17,6 +17,8 @@
 #include "common/protobuf/utility.h"
 
 #include "google/pubsub/v1/pubsub.pb.h"
+#include "external/com_github_cloudevents_sdk/v1/protocol_binding/pubsub_binder.h"
+#include "external/com_github_cloudevents_sdk/v1/protocol_binding/http_binder.h"
 
 namespace Envoy {
 namespace Extensions {
@@ -25,6 +27,8 @@ namespace GcpEventsConvert {
 
 using google::pubsub::v1::PubsubMessage;
 using google::pubsub::v1::ReceivedMessage;
+using cloudevents::binding::Binder;
+using io::cloudevents::v1::CloudEvent;
 
 GcpEventsConvertFilterConfig::GcpEventsConvertFilterConfig(
     const envoy::extensions::filters::http::gcp_events_convert::v3::GcpEventsConvert& proto_config)
@@ -87,22 +91,29 @@ Http::FilterDataStatus GcpEventsConvertFilter::decodeData(Buffer::Instance&, boo
     return Http::FilterDataStatus::Continue;
   }
 
-  // TODO(#2): Step 5 & 6 Use Cloud Event SDK to convert Pubsub Message to HTTP Binding
-  // HttpRequest http_req = Binder.bind(cloudevents);
-  HttpRequest http_req;
-  http_req.base().set("content-type", "application/text");
-  http_req.base().set("ce-specversion", "1.0");
-  http_req.base().set("ce-type", "com.example.some_event");
-  http_req.base().set("ce-time", "2020-03-10T03:56:24Z");
-  http_req.body() = "certain body string text";
+  const PubsubMessage& pubsub_message = received_message.message();
+  cloudevents::binding::PubsubBinder pubsub_binder;
 
-  absl::Status update_status = updateHeader(http_req);
+  cloudevents_absl::StatusOr<CloudEvent> ce = pubsub_binder.Unbind(pubsub_message);
+  if (!ce.ok()) {
+    ENVOY_LOG(warn, "Gcp Events Convert Filter log: SDK pubsub unbind error");
+    return Http::FilterDataStatus::Continue;
+  }
+
+  cloudevents::binding::HttpReqBinder http_binder;
+  cloudevents_absl::StatusOr<HttpRequest> req = http_binder.Bind(*ce);
+  if (!req.ok()) {
+    ENVOY_LOG(warn, "Gcp Events Convert Filter log: SDK Http bind error {}",req.status());
+    return Http::FilterDataStatus::Continue;
+  }
+
+  absl::Status update_status = updateHeader(*req);
   if (!update_status.ok()) {
     ENVOY_LOG(warn, "Gcp Events Convert Filter log: update header {}", update_status.ToString());
     return Http::FilterDataStatus::Continue;
   }
 
-  update_status = updateBody(http_req);
+  update_status = updateBody(*req);
   if (!update_status.ok()) {
     ENVOY_LOG(warn, "Gcp Events Convert Filter log: update body {}", update_status.ToString());
     return Http::FilterDataStatus::Continue;
