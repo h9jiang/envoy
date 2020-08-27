@@ -106,13 +106,11 @@ Http::FilterDataStatus GcpEventsConvertFilter::decodeData(Buffer::Instance&, boo
     ENVOY_LOG(warn, "Gcp Events Convert Filter log: SDK Http bind error {}",req.status());
     return Http::FilterDataStatus::Continue;
   }
-
   absl::Status update_status = updateHeader(*req);
   if (!update_status.ok()) {
     ENVOY_LOG(warn, "Gcp Events Convert Filter log: update header {}", update_status.ToString());
     return Http::FilterDataStatus::Continue;
   }
-
   update_status = updateBody(*req);
   if (!update_status.ok()) {
     ENVOY_LOG(warn, "Gcp Events Convert Filter log: update body {}", update_status.ToString());
