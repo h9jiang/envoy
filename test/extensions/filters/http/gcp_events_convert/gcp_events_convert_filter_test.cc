@@ -89,7 +89,7 @@ TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithCloudEvent) {
   attributes["ce-id"] = "1234-1234-1234";
   attributes["ce-source"] = "/mycontext/subcontext";
   attributes["ce-datacontenttype"] = "application/text; charset=utf-8";
-  pubsub_message.set_data("cloud event data payload");
+  pubsub_message.set_data("Y2xvdWQgZXZlbnQgZGF0YSBwYXlsb2Fk");
 
   // create a json string of received message
   std::string json_string;
@@ -106,9 +106,9 @@ TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithCloudEvent) {
   EXPECT_EQ(Http::FilterDataStatus::Continue, filter.decodeData(data2, true));
 
   // filter should replace body with given string
-  ASSERT_EQ(buffer.toString(), "certain body string text");
+  ASSERT_EQ("cloud event data payload", buffer.toString());
   // filter should replace headers content-type with `ce-datecontenttype`
-  ASSERT_EQ("application/text", headers.getContentTypeValue());
+  ASSERT_EQ("application/text; charset=utf-8", headers.getContentTypeValue());
   // filter should insert ce attribute into header (except for `ce-datacontenttype`)
   ASSERT_THAT(headers.get(Http::LowerCaseString("ce-datacontenttype")), testing::IsNull());
   ASSERT_EQ("1.0",
@@ -117,6 +117,10 @@ TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithCloudEvent) {
             headers.get(Http::LowerCaseString("ce-type"))->value().getStringView());
   ASSERT_EQ("2020-03-10T03:56:24Z",
             headers.get(Http::LowerCaseString("ce-time"))->value().getStringView());
+  ASSERT_EQ("1234-1234-1234",
+            headers.get(Http::LowerCaseString("ce-id"))->value().getStringView());
+  ASSERT_EQ("/mycontext/subcontext",
+            headers.get(Http::LowerCaseString("ce-source"))->value().getStringView());
 }
 
 TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithRandomBody) {

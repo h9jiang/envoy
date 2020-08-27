@@ -68,7 +68,7 @@ TEST_P(GcpEventsConvertIntegrationTest, CloudEventNormalRequest) {
   attributes["ce-id"] = "1234-1234-1234";
   attributes["ce-source"] = "/mycontext/subcontext";
   attributes["ce-datacontenttype"] = "application/text; charset=utf-8";
-  pubsub_message.set_data("cloud event data payload");
+  pubsub_message.set_data("Y2xvdWQgZXZlbnQgZGF0YSBwYXlsb2Fk");
 
   // create a json string of received message
   std::string json_string;
@@ -90,10 +90,10 @@ TEST_P(GcpEventsConvertIntegrationTest, CloudEventNormalRequest) {
   ASSERT_TRUE(request_stream->waitForEndStream(*dispatcher_));
   response->waitForEndStream();
   // filter should replace body with given string
-  ASSERT_EQ(request_stream->body().toString(), "certain body string text");
+  ASSERT_EQ("cloud event data payload", request_stream->body().toString());
   auto& request_headers = request_stream->headers();
   // filter should replace headers content-type with `ce-datecontenttype`
-  ASSERT_EQ("application/text", request_headers.getContentTypeValue());
+  ASSERT_EQ("application/text; charset=utf-8", request_headers.getContentTypeValue());
   // filter should insert ce attribute into header (except for `ce-datacontenttype`)
   ASSERT_THAT(request_headers.get(Http::LowerCaseString("ce-datacontenttype")), testing::IsNull());
   ASSERT_EQ("1.0",
@@ -138,7 +138,7 @@ TEST_P(GcpEventsConvertIntegrationTest, CloudEventPartialMissingRequest) {
   attributes["ce-id"] = "1234-1234-1234";
   attributes["ce-source"] = "/mycontext/subcontext";
   attributes["ce-datacontenttype"] = "application/text; charset=utf-8";
-  pubsub_message.set_data("cloud event data payload");
+  pubsub_message.set_data("Y2xvdWQgZXZlbnQgZGF0YSBwYXlsb2Fk");
 
   // create a json string of received message
   std::string full_json_string;
