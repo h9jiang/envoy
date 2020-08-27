@@ -38,8 +38,9 @@ GcpEventsConvertFilter::GcpEventsConvertFilter(GcpEventsConvertFilterConfigShare
     : config_(config) {}
 
 GcpEventsConvertFilter::GcpEventsConvertFilter(GcpEventsConvertFilterConfigSharedPtr config,
-                                               bool has_cloud_event)
-    : has_cloud_event_(has_cloud_event), config_(config) {}
+                                               bool has_cloud_event, 
+                                               Http::RequestHeaderMap* headers)
+    : request_headers_(headers), has_cloud_event_(has_cloud_event), config_(config) {}
 
 void GcpEventsConvertFilter::onDestroy() {}
 
@@ -105,13 +106,11 @@ Http::FilterDataStatus GcpEventsConvertFilter::decodeData(Buffer::Instance&, boo
     ENVOY_LOG(warn, "Gcp Events Convert Filter log: SDK Http bind error {}",req.status());
     return Http::FilterDataStatus::Continue;
   }
-
   absl::Status update_status = updateHeader(*req);
   if (!update_status.ok()) {
     ENVOY_LOG(warn, "Gcp Events Convert Filter log: update header {}", update_status.ToString());
     return Http::FilterDataStatus::Continue;
   }
-
   update_status = updateBody(*req);
   if (!update_status.ok()) {
     ENVOY_LOG(warn, "Gcp Events Convert Filter log: update body {}", update_status.ToString());
