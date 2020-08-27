@@ -34,8 +34,9 @@ GcpEventsConvertFilter::GcpEventsConvertFilter(GcpEventsConvertFilterConfigShare
     : config_(config) {}
 
 GcpEventsConvertFilter::GcpEventsConvertFilter(GcpEventsConvertFilterConfigSharedPtr config,
-                                               bool has_cloud_event)
-    : has_cloud_event_(has_cloud_event), config_(config) {}
+                                               bool has_cloud_event,
+                                               Http::RequestHeaderMap* headers)
+    : request_headers_(headers), has_cloud_event_(has_cloud_event), config_(config) {}
 
 void GcpEventsConvertFilter::onDestroy() {}
 
