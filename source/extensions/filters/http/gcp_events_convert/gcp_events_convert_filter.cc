@@ -126,7 +126,6 @@ bool GcpEventsConvertFilter::isCloudEvent(const Http::RequestHeaderMap& headers)
 absl::Status GcpEventsConvertFilter::updateHeader(const HttpRequest& http_req) {
   for (const auto& header : http_req.base()) {
     Http::LowerCaseString header_key(header.name_string().to_string());
-    // std::string header_val = header.value().to_string();
     if (header_key == Http::LowerCaseString("content-type")) {
       request_headers_->setContentType(header.value().to_string());
     } else {
