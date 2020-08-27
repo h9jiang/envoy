@@ -62,8 +62,10 @@ TEST(GcpEventsConvertFilterUnitTest, DecodeHeaderWithRandomContent) {
 TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithCloudEvent) {
   envoy::extensions::filters::http::gcp_events_convert::v3::GcpEventsConvert proto_config;
   proto_config.set_content_type("application/grpc+cloudevent+json");
+  Http::TestRequestHeaderMapImpl headers;
   GcpEventsConvertFilter filter(std::make_shared<GcpEventsConvertFilterConfig>(proto_config),
-                                /*has_cloud_event=*/true);
+                                /*has_cloud_event=*/true,
+                                /*headers=*/&headers);
   Http::MockStreamDecoderFilterCallbacks callbacks;
   filter.setDecoderFilterCallbacks(callbacks);
 
@@ -103,14 +105,26 @@ TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithCloudEvent) {
   Buffer::OwnedImpl data2;
   EXPECT_EQ(Http::FilterDataStatus::Continue, filter.decodeData(data2, true));
 
-  ASSERT_EQ(buffer.toString(), "This is a example body");
+  // filter should replace body with given string
+  ASSERT_EQ(buffer.toString(), "certain body string text");
+  // filter should replace headers content-type with `ce-datecontenttype`
+  ASSERT_EQ("application/text", headers.getContentTypeValue());
+  // filter should insert ce attribute into header (except for `ce-datacontenttype`)
+  ASSERT_THAT(headers.get(Http::LowerCaseString("ce-datacontenttype")), testing::IsNull());
+  ASSERT_EQ("1.0",
+            headers.get(Http::LowerCaseString("ce-specversion"))->value().getStringView());
+  ASSERT_EQ("com.example.some_event",
+            headers.get(Http::LowerCaseString("ce-type"))->value().getStringView());
+  ASSERT_EQ("2020-03-10T03:56:24Z",
+            headers.get(Http::LowerCaseString("ce-time"))->value().getStringView());
 }
 
 TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithRandomBody) {
   envoy::extensions::filters::http::gcp_events_convert::v3::GcpEventsConvert proto_config;
   proto_config.set_content_type("application/grpc+cloudevent+json");
   GcpEventsConvertFilter filter(std::make_shared<GcpEventsConvertFilterConfig>(proto_config),
-                                /*has_cloud_event=*/false);
+                                /*has_cloud_event=*/false,
+                                /*headers=*/nullptr);
   Http::MockStreamDecoderFilterCallbacks callbacks;
   filter.setDecoderFilterCallbacks(callbacks);
 
