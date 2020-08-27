@@ -33,7 +33,9 @@ public:
   // normal constructor
   GcpEventsConvertFilter(GcpEventsConvertFilterConfigSharedPtr config);
   // special constructor only used for TEST purpose
-  GcpEventsConvertFilter(GcpEventsConvertFilterConfigSharedPtr config, bool has_cloud_event);
+  GcpEventsConvertFilter(GcpEventsConvertFilterConfigSharedPtr config, 
+                         bool has_cloud_event,
+                         Http::RequestHeaderMap* headers);
   // Http::StreamFilterBase
   void onDestroy() override;
 
