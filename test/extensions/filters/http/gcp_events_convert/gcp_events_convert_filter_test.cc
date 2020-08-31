@@ -82,8 +82,10 @@ TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithCloudEvent) {
 TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithCloudEventEndOfStream) {
   envoy::extensions::filters::http::gcp_events_convert::v3::GcpEventsConvert proto_config;
   proto_config.set_content_type("application/grpc+cloudevent+json");
+  Http::TestRequestHeaderMapImpl headers;
   GcpEventsConvertFilter filter(std::make_shared<GcpEventsConvertFilterConfig>(proto_config),
-                                /*has_cloud_event=*/true);
+                                /*has_cloud_event=*/true,
+                                /*headers=*/&headers);
   Http::MockStreamDecoderFilterCallbacks callbacks;
   filter.setDecoderFilterCallbacks(callbacks);
 
