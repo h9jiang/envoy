@@ -96,14 +96,14 @@ Http::FilterDataStatus GcpEventsConvertFilter::decodeData(Buffer::Instance&, boo
 
   cloudevents_absl::StatusOr<CloudEvent> ce = pubsub_binder.Unbind(pubsub_message);
   if (!ce.ok()) {
-    ENVOY_LOG(warn, "Gcp Events Convert Filter log: SDK pubsub unbind error");
+    ENVOY_LOG(warn, "Gcp Events Convert Filter log: SDK pubsub unbind error {}", ce.status());
     return Http::FilterDataStatus::Continue;
   }
 
   cloudevents::binding::HttpReqBinder http_binder;
   cloudevents_absl::StatusOr<HttpRequest> req = http_binder.Bind(*ce);
   if (!req.ok()) {
-    ENVOY_LOG(warn, "Gcp Events Convert Filter log: SDK Http bind error {}",req.status());
+    ENVOY_LOG(warn, "Gcp Events Convert Filter log: SDK Http bind error {}", req.status());
     return Http::FilterDataStatus::Continue;
   }
   absl::Status update_status = updateHeader(*req);

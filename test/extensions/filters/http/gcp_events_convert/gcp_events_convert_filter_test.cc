@@ -127,9 +127,9 @@ TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithCloudEventEndOfStream) {
   EXPECT_EQ(Http::FilterDataStatus::Continue, filter.decodeData(data, true));
 
   // filter should replace body with given string
-  EXPECT_EQ(buffer.toString(), "certain body string text");
+  EXPECT_EQ("cloud event data payload", buffer.toString());
   // filter should replace headers content-type with `ce-datecontenttype`
-  EXPECT_EQ("application/text", headers.getContentTypeValue());
+  EXPECT_EQ("application/text; charset=utf-8", headers.getContentTypeValue());
   // filter should insert ce attribute into header (except for `ce-datacontenttype`)
   EXPECT_THAT(headers.get(Http::LowerCaseString("ce-datacontenttype")), testing::IsNull());
   EXPECT_EQ("1.0",
