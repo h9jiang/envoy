@@ -71,7 +71,7 @@ TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithCloudEvent) {
 
   // buffer simulate the buffered data and will be set manually
   Buffer::OwnedImpl buffer;
-  EXPECT_CALL(callbacks, decodingBuffer()).Times(1).WillOnce(testing::Return(&buffer));
+  EXPECT_CALL(callbacks, decodingBuffer).Times(2).WillRepeatedly(testing::Return(&buffer));
   EXPECT_CALL(callbacks, modifyDecodingBuffer)
       .Times(1)
       .WillOnce([&buffer](std::function<void(Buffer::Instance&)> lambda) { lambda(buffer); });
@@ -89,21 +89,18 @@ TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithCloudEvent) {
   attributes["ce-id"] = "1234-1234-1234";
   attributes["ce-source"] = "/mycontext/subcontext";
   attributes["ce-datacontenttype"] = "application/text; charset=utf-8";
-  pubsub_message.set_data("Y2xvdWQgZXZlbnQgZGF0YSBwYXlsb2Fk");
+  pubsub_message.set_data("cloud event data payload");
 
-  // create a json string of received message
-  std::string json_string;
-  auto status = Envoy::ProtobufUtil::MessageToJsonString(received_message, &json_string);
-  ASSERT_TRUE(status.ok());
-
-  Buffer::OwnedImpl data1(json_string);
-  EXPECT_EQ(Http::FilterDataStatus::StopIterationAndBuffer, filter.decodeData(data1, false));
+  // create a proto string of received message
+  std::string proto_string;
+  bool status = received_message.SerializeToString(&proto_string);
+  ASSERT_TRUE(status);
 
   // StopIterationAndBuffer : buffer data will buffer the string manually
-  buffer.add(json_string);
+  buffer.add(proto_string);
 
-  Buffer::OwnedImpl data2;
-  EXPECT_EQ(Http::FilterDataStatus::Continue, filter.decodeData(data2, true));
+  Buffer::OwnedImpl data;
+  EXPECT_EQ(Http::FilterDataStatus::Continue, filter.decodeData(data, true));
 
   // filter should replace body with given string
   ASSERT_EQ("cloud event data payload", buffer.toString());

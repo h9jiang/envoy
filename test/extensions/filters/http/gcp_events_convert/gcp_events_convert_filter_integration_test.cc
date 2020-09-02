@@ -68,17 +68,17 @@ TEST_P(GcpEventsConvertIntegrationTest, CloudEventNormalRequest) {
   attributes["ce-id"] = "1234-1234-1234";
   attributes["ce-source"] = "/mycontext/subcontext";
   attributes["ce-datacontenttype"] = "application/text; charset=utf-8";
-  pubsub_message.set_data("Y2xvdWQgZXZlbnQgZGF0YSBwYXlsb2Fk");
+  pubsub_message.set_data("cloud event data payload");
 
-  // create a json string of received message
-  std::string json_string;
-  auto status = Envoy::ProtobufUtil::MessageToJsonString(received_message, &json_string);
-  ASSERT_TRUE(status.ok());
+  // create a proto string of received message
+  std::string proto_string;
+  bool status = received_message.SerializeToString(&proto_string);
+  ASSERT_TRUE(status);
 
   // send json string in multilple bodies @end_stream = false
-  for (size_t index = 0; index < json_string.size(); index += 10) {
-    size_t length = (json_string.size() - index) < 10 ? (json_string.size() - index) : 10;
-    Buffer::OwnedImpl data(json_string.substr(index, length));
+  for (size_t index = 0; index < proto_string.size(); index += 10) {
+    size_t length = (proto_string.size() - index) < 10 ? (proto_string.size() - index) : 10;
+    Buffer::OwnedImpl data(proto_string.substr(index, length));
     codec_client->sendData(*request_encoder_, data, false);
   }
   // send the last piece of json string   @end_stream = true
@@ -141,18 +141,18 @@ TEST_P(GcpEventsConvertIntegrationTest, CloudEventPartialMissingRequest) {
   pubsub_message.set_data("Y2xvdWQgZXZlbnQgZGF0YSBwYXlsb2Fk");
 
   // create a json string of received message
-  std::string full_json_string;
-  auto status = Envoy::ProtobufUtil::MessageToJsonString(received_message, &full_json_string);
-  ASSERT_TRUE(status.ok());
+  std::string full_proto_string;
+  bool status = received_message.SerializeToString(&full_proto_string);
+  ASSERT_TRUE(status);
 
   // another string missing the last 10 characters
-  std::string partial_json_string = full_json_string.substr(0, full_json_string.size() - 10);
+  std::string partial_proto_string = full_proto_string.substr(0, full_proto_string.size() - 10);
 
   // send json string in multilple bodies @end_stream = false
-  for (size_t index = 0; index < partial_json_string.size(); index += 10) {
+  for (size_t index = 0; index < partial_proto_string.size(); index += 10) {
     size_t length =
-        (partial_json_string.size() - index) < 10 ? (partial_json_string.size() - index) : 10;
-    Buffer::OwnedImpl data(partial_json_string.substr(index, length));
+        (partial_proto_string.size() - index) < 10 ? (partial_proto_string.size() - index) : 10;
+    Buffer::OwnedImpl data(partial_proto_string.substr(index, length));
     codec_client->sendData(*request_encoder_, data, false);
   }
   // send the last piece of json string   @end_stream = true
@@ -164,7 +164,7 @@ TEST_P(GcpEventsConvertIntegrationTest, CloudEventPartialMissingRequest) {
   ASSERT_TRUE(request_stream->waitForEndStream(*dispatcher_));
   response->waitForEndStream();
   // filter should be pass through since filter can not convert partial json string to proto object
-  ASSERT_EQ(request_stream->body().toString(), partial_json_string);
+  ASSERT_EQ(request_stream->body().toString(), partial_proto_string);
   codec_client->close();
 }
 
