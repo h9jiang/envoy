@@ -27,7 +27,6 @@ namespace GcpEventsConvert {
 
 using google::pubsub::v1::PubsubMessage;
 using google::pubsub::v1::ReceivedMessage;
-using cloudevents::binding::Binder;
 using io::cloudevents::v1::CloudEvent;
 
 GcpEventsConvertFilterConfig::GcpEventsConvertFilterConfig(
@@ -108,17 +107,9 @@ Http::FilterDataStatus GcpEventsConvertFilter::decodeData(Buffer::Instance&, boo
     return Http::FilterDataStatus::Continue;
   }
 
-  absl::Status update_status = updateHeader(*req);
-  if (!update_status.ok()) {
-    ENVOY_LOG(warn, "Gcp Events Convert Filter log: update header {}", update_status.ToString());
-    return Http::FilterDataStatus::Continue;
-  }
-
-  update_status = updateBody(*req);
-  if (!update_status.ok()) {
-    ENVOY_LOG(warn, "Gcp Events Convert Filter log: update body {}", update_status.ToString());
-    return Http::FilterDataStatus::Continue;
-  }
+  // update body & header according to output request from SDK
+  updateHeader(*req);
+  updateBody(*req);
 
   return Http::FilterDataStatus::Continue;
 }
@@ -136,7 +127,7 @@ bool GcpEventsConvertFilter::isCloudEvent(const Http::RequestHeaderMap& headers)
   return headers.getContentTypeValue() == config_->content_type_;
 }
 
-absl::Status GcpEventsConvertFilter::updateHeader(const HttpRequest& http_req) {
+void GcpEventsConvertFilter::updateHeader(const HttpRequest& http_req) {
   for (const auto& header : http_req.base()) {
     Http::LowerCaseString header_key(header.name_string().to_string());
     // avoid deep copy from boost string_view to absl string_view
@@ -148,17 +139,15 @@ absl::Status GcpEventsConvertFilter::updateHeader(const HttpRequest& http_req) {
       request_headers_->addCopy(header_key, header_val);
     }
   }
-  return absl::OkStatus();
 }
 
-absl::Status GcpEventsConvertFilter::updateBody(const HttpRequest& http_req) {
+void GcpEventsConvertFilter::updateBody(const HttpRequest& http_req) {
   decoder_callbacks_->modifyDecodingBuffer([&http_req](Buffer::Instance& buffered) {
     // drain the current buffered instance
     buffered.drain(buffered.length());
     // replace the current buffered instance with the new body
     buffered.add(http_req.body());
   });
-  return absl::OkStatus();
 }
 
 } // namespace GcpEventsConvert
