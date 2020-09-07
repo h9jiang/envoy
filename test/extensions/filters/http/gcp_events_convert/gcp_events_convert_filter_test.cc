@@ -114,13 +114,13 @@ TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithCloudEventEndOfStream) {
   attributes["ce-datacontenttype"] = "application/text; charset=utf-8";
   pubsub_message.set_data("cloud event data payload");
 
-  // create a json string of received message
-  std::string json_string;
-  auto status = Envoy::ProtobufUtil::MessageToJsonString(received_message, &json_string);
-  ASSERT_TRUE(status.ok());
+  // create a proto string of received message
+  std::string proto_string;
+  bool status = received_message.SerializeToString(&proto_string);
+  ASSERT_TRUE(status);
 
   // Previously stored data
-  buffer.add(json_string);
+  buffer.add(proto_string);
 
   Buffer::OwnedImpl data;
   EXPECT_EQ(Http::FilterDataStatus::Continue, filter.decodeData(data, true));
