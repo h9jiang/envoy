@@ -65,7 +65,7 @@ TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithCloudEvent) {
   Http::TestRequestHeaderMapImpl headers;
   GcpEventsConvertFilter filter(std::make_shared<GcpEventsConvertFilterConfig>(proto_config),
                                 /*has_cloud_event=*/true,
-                                /*headers=*/&headers);
+                                &headers);
   Http::MockStreamDecoderFilterCallbacks callbacks;
   filter.setDecoderFilterCallbacks(callbacks);
 
@@ -84,7 +84,7 @@ TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithCloudEventEndOfStream) {
   Http::TestRequestHeaderMapImpl headers;
   GcpEventsConvertFilter filter(std::make_shared<GcpEventsConvertFilterConfig>(proto_config),
                                 /*has_cloud_event=*/true,
-                                /*headers=*/&headers);
+                                &headers);
   Http::MockStreamDecoderFilterCallbacks callbacks;
   filter.setDecoderFilterCallbacks(callbacks);
 
