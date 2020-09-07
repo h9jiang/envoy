@@ -49,12 +49,17 @@ public:
 private:
   using HttpRequest = boost::beast::http::request<boost::beast::http::string_body>;
 
+  // build body with both buffered data and the incoming buffer data
+  std::string buildBody(const Buffer::Instance* buffered, const Buffer::Instance& last);
+
   bool isCloudEvent(const Http::RequestHeaderMap& headers) const;
 
   // modify the data of HTTP request
   // 1. drain buffered data
   // 2. write cloud event data
-  void updateBody(const HttpRequest& request);
+  void updateBody(const HttpRequest& http_req,
+                  const Buffer::Instance* bufferedPtr,
+                  Buffer::Instance& buffer);
 
   // modify the header of HTTP request
   // 1. replace header's content type with ce-datacontenttype
