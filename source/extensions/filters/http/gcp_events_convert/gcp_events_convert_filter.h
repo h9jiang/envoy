@@ -32,7 +32,7 @@ class GcpEventsConvertFilter : public Http::StreamDecoderFilter,
 public:
   // normal constructor
   GcpEventsConvertFilter(GcpEventsConvertFilterConfigSharedPtr config);
-  // special constructor only used for TEST purpose
+  // special constructor for Unit Test ONLY
   GcpEventsConvertFilter(GcpEventsConvertFilterConfigSharedPtr config, 
                          bool has_cloud_event,
                          Http::RequestHeaderMap* headers);
