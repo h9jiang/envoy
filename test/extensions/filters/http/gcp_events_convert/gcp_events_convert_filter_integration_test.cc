@@ -93,10 +93,10 @@ TEST_P(GcpEventsConvertIntegrationTest, CloudEventNormalRequest) {
   ASSERT_TRUE(request_stream->waitForEndStream(*dispatcher_));
   response->waitForEndStream();
   // filter should replace body with given string
-  EXPECT_EQ("certain body string text", request_stream->body().toString());
+  EXPECT_EQ("cloud event data payload", request_stream->body().toString());
   auto& request_headers = request_stream->headers();
   // filter should replace headers content-type with `ce-datecontenttype`
-  EXPECT_EQ("application/text", request_headers.getContentTypeValue());
+  EXPECT_EQ("application/text; charset=utf-8", request_headers.getContentTypeValue());
   // filter should insert ce attribute into header (except for `ce-datacontenttype`)
   EXPECT_THAT(request_headers.get(Http::LowerCaseString("ce-datacontenttype")), testing::IsNull());
   EXPECT_EQ("1.0",
@@ -105,6 +105,10 @@ TEST_P(GcpEventsConvertIntegrationTest, CloudEventNormalRequest) {
             request_headers.get(Http::LowerCaseString("ce-type"))->value().getStringView());
   EXPECT_EQ("2020-03-10T03:56:24Z",
             request_headers.get(Http::LowerCaseString("ce-time"))->value().getStringView());
+  EXPECT_EQ("1234-1234-1234",
+            request_headers.get(Http::LowerCaseString("ce-id"))->value().getStringView());
+  EXPECT_EQ("/mycontext/subcontext",
+            request_headers.get(Http::LowerCaseString("ce-source"))->value().getStringView());
   codec_client->close();
 }
 
