@@ -18,6 +18,7 @@ envoy_extension_cc_test(
     deps = [
         "//source/common/config:utility_lib",
         "//source/extensions/grpc_stream_demuxer:config",
+        "//test/mocks/event:event_mocks",
         "//test/test_common:utility_lib",
         "@envoy_api//envoy/extensions/grpc_stream_demuxer/v3alpha:pkg_cc_proto",
     ],

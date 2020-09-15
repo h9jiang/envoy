@@ -81,8 +81,8 @@ void MainImpl::initialize(const envoy::config::bootstrap::v3::Bootstrap& bootstr
     ENVOY_LOG(debug, "listener #{}:", i);
     server.listenerManager().addOrUpdateListener(listeners[i], "", false);
   }
-
-  initializeGrpcStreamDemuxers(bootstrap);
+  
+  initializeGrpcStreamDemuxers(bootstrap, server);
 
   stats_flush_interval_ =
       std::chrono::milliseconds(PROTOBUF_GET_MS_OR_DEFAULT(bootstrap, stats_flush_interval, 5000));
@@ -155,15 +155,13 @@ void MainImpl::initializeStatsSinks(const envoy::config::bootstrap::v3::Bootstra
   }
 }
 
-void MainImpl::initializeGrpcStreamDemuxers(
-    const envoy::config::bootstrap::v3::Bootstrap& bootstrap) {
+void MainImpl::initializeGrpcStreamDemuxers(const envoy::config::bootstrap::v3::Bootstrap& bootstrap,
+				   Instance& server) {
   ENVOY_LOG(info, "loading gRPC stream demuxer configurations");
 
-  for (const envoy::extensions::grpc_stream_demuxer::v3alpha::GrpcStreamDemuxer& demuxer_config :
-       bootstrap.grpc_stream_demuxers()) {
-    auto& factory = Config::Utility::getAndCheckFactoryByName<
-        Extensions::GrpcStreamDemuxer::GrpcStreamDemuxerFactory>("grpc_stream_demuxer");
-    grpc_stream_demuxers_.emplace_back(factory.createGrpcStreamDemuxer(demuxer_config));
+  for (const envoy::extensions::grpc_stream_demuxer::v3alpha::GrpcStreamDemuxer& demuxer_config : bootstrap.grpc_stream_demuxers()) {
+    auto& factory = Config::Utility::getAndCheckFactoryByName<Extensions::GrpcStreamDemuxer::GrpcStreamDemuxerFactory>("grpc_stream_demuxer");
+    grpc_stream_demuxers_.emplace_back(factory.createGrpcStreamDemuxer(demuxer_config, server.dispatcher()));
   }
 }
 

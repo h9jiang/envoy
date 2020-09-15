@@ -14,7 +14,10 @@ envoy_cc_library(
     srcs = ["grpc_stream_demuxer.cc"],
     hdrs = ["grpc_stream_demuxer.h"],
     deps = [
+	    "//include/envoy/event:dispatcher_interface",
         "//source/common/common:minimal_logger_lib",
+        "@com_google_googleapis//google/pubsub/v1:pubsub_cc_grpc",
+        "@com_github_grpc_grpc//:grpc++",
     ],
 )
 

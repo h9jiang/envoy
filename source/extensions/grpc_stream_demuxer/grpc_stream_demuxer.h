@@ -1,5 +1,7 @@
 #pragma once
 
+#include "envoy/event/dispatcher.h"
+
 #include "common/common/logger.h"
 
 namespace Envoy {
@@ -13,7 +15,7 @@ namespace GrpcStreamDemuxer {
  */
 class GrpcStreamDemuxer : Logger::Loggable<Logger::Id::grpc_stream_demuxer> {
 public:
-  GrpcStreamDemuxer(const std::string& subscription, const std::string& address, int port);
+  GrpcStreamDemuxer(const std::string& subscription, const std::string& address, int port, Event::Dispatcher& dispatcher);
 
   /**
    * Create a streaming pull connection to subscription_ and process incoming
@@ -27,6 +29,7 @@ private:
   // Address and port to forward unary grpc requests to.
   std::string address_;
   int port_;
+  Event::TimerPtr interval_timer_;
 };
 
 using GrpcStreamDemuxerPtr = std::unique_ptr<GrpcStreamDemuxer>;

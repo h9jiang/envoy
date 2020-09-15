@@ -21,6 +21,7 @@
 #include "common/json/json_loader.h"
 #include "common/network/resolver_impl.h"
 #include "common/network/utility.h"
+#include "extensions/grpc_stream_demuxer/config.h"
 
 #include "extensions/grpc_stream_demuxer/config.h"
 
@@ -130,8 +131,9 @@ private:
   void initializeStatsSinks(const envoy::config::bootstrap::v3::Bootstrap& bootstrap,
                             Instance& server);
 
-  void initializeGrpcStreamDemuxers(const envoy::config::bootstrap::v3::Bootstrap& bootstrap);
-
+  void initializeGrpcStreamDemuxers(const envoy::config::bootstrap::v3::Bootstrap& bootstrap,
+		  	    Instance& server);
+  
   std::unique_ptr<Upstream::ClusterManager> cluster_manager_;
   std::list<Stats::SinkPtr> stats_sinks_;
   std::list<Extensions::GrpcStreamDemuxer::GrpcStreamDemuxerPtr> grpc_stream_demuxers_;

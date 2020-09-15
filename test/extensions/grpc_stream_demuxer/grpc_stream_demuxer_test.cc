@@ -3,7 +3,7 @@
 #include "common/config/utility.h"
 
 #include "extensions/grpc_stream_demuxer/config.h"
-
+#include "test/mocks/event/mocks.h"
 #include "test/test_common/utility.h"
 
 #include "gmock/gmock.h"
@@ -24,7 +24,8 @@ TEST(GrpcStreamDemuxerTest, CreateGrpcStreamDemuxer) {
   TestUtility::loadFromYaml(yaml, demuxer_config);
   auto& factory =
       Config::Utility::getAndCheckFactoryByName<GrpcStreamDemuxerFactory>("grpc_stream_demuxer");
-  GrpcStreamDemuxerPtr demuxer = factory.createGrpcStreamDemuxer(demuxer_config);
+  testing::NiceMock<Event::MockDispatcher> dispatcher;
+  GrpcStreamDemuxerPtr demuxer = factory.createGrpcStreamDemuxer(demuxer_config, dispatcher);
   EXPECT_THAT(demuxer, testing::NotNull());
 }
 

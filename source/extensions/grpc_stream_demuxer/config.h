@@ -10,9 +10,7 @@ namespace GrpcStreamDemuxer {
 
 class GrpcStreamDemuxerFactoryImpl : public GrpcStreamDemuxerFactory {
 public:
-  GrpcStreamDemuxerPtr createGrpcStreamDemuxer(
-      const envoy::extensions::grpc_stream_demuxer::v3alpha::GrpcStreamDemuxer& demuxer_config)
-      override;
+  GrpcStreamDemuxerPtr createGrpcStreamDemuxer(const envoy::extensions::grpc_stream_demuxer::v3alpha::GrpcStreamDemuxer& demuxer_config, Event::Dispatcher& dispatcher) override;
   std::string name() const override { return "grpc_stream_demuxer"; }
 };
 
