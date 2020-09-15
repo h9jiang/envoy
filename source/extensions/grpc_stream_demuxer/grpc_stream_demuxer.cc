@@ -1,18 +1,32 @@
 #include "extensions/grpc_stream_demuxer/grpc_stream_demuxer.h"
 
-#include "google/pubsub/v1/pubsub.grpc.pb.h"
-#include "grpc++/grpc++.h"
-
-using grpc::ClientContext;
-using grpc::ClientReaderWriter;
-using google::pubsub::v1::Subscriber;
-using google::pubsub::v1::StreamingPullRequest;
-using google::pubsub::v1::StreamingPullResponse;
-
 namespace Envoy {
 namespace Extensions {
 namespace GrpcStreamDemuxer {
 
+ReceivedMessageServiceClient::ReceivedMessageServiceClient(std::shared_ptr<Channel> channel)
+  : stub_(ReceivedMessageService::NewStub(channel)) {}
+
+// Assembles the client's payload, sends it and presents the response back
+// from the server.
+std::string ReceivedMessageServiceClient::SendReceivedMessage(const ReceivedMessage &request) {
+  google::protobuf::Empty reply;
+  // Context for the client. It could be used to convey extra information to
+  // the server and/or tweak certain RPC behaviors.
+  ClientContext context;
+
+  // The actual RPC.
+  Status status = stub_->SendReceivedMessage(&context, request, &reply);
+
+  // Act upon its status.
+  if (status.ok()) {
+    return "RPC worked";
+  } else {
+    std::cout << status.error_code() << ": " << status.error_message() << std::endl;
+    return "RPC failed";
+  }
+}
+	
 GrpcStreamDemuxer::GrpcStreamDemuxer(const std::string& subscription, const std::string& address, int port, Event::Dispatcher& dispatcher) 
   : subscription_(subscription), address_(address), port_(port) {   	
   interval_timer_ = dispatcher.createTimer([this]() -> void { start(); });
@@ -25,6 +39,7 @@ void GrpcStreamDemuxer::start() {
     grpc::CreateChannel("pubsub.googleapis.com", creds));      
 
   // Open up the stream.
+  // CompletionQueue cq;
   ClientContext ctx;
   unsigned int client_connection_timeout = 2;
   std::chrono::system_clock::time_point deadline = 
@@ -47,6 +62,11 @@ void GrpcStreamDemuxer::start() {
     for (const auto &message : response.received_messages()) {
       // Print the data from the message.
       ENVOY_LOG(info, "Pubsub message data: {}", message.message().data());
+      // Send the message using a unary grpc request.
+      std::string target_uri = address_ + ":" + std::to_string(port_);
+      ReceivedMessageServiceClient client(grpc::CreateChannel(target_uri, grpc::InsecureChannelCredentials()));
+      std::string reply = client.SendReceivedMessage(message);
+      ENVOY_LOG(info, "Unary request response: {}", reply);
       ack_request.add_ack_ids(message.ack_id());
     }
     stream->Write(ack_request);

@@ -11,6 +11,7 @@
 EXTERNAL_PROTO_IMPORT_BAZEL_DEP_MAP = {
     "google/api/expr/v1alpha1/checked.proto": "@com_google_googleapis//google/api/expr/v1alpha1:checked_proto",
     "google/api/expr/v1alpha1/syntax.proto": "@com_google_googleapis//google/api/expr/v1alpha1:syntax_proto",
+    "google/pubsub/v1/pubsub.proto": "@com_google_googleapis//google/pubsub/v1:pubsub_proto",
     "metrics.proto": "@prometheus_metrics_model//:client_model",
     "opencensus/proto/trace/v1/trace.proto": "@opencensus_proto//opencensus/proto/trace/v1:trace_proto",
     "opencensus/proto/trace/v1/trace_config.proto": "@opencensus_proto//opencensus/proto/trace/v1:trace_config_proto",
@@ -28,6 +29,7 @@ EXTERNAL_PROTO_GO_BAZEL_DEP_MAP = {
 EXTERNAL_PROTO_CC_BAZEL_DEP_MAP = {
     "@com_google_googleapis//google/api/expr/v1alpha1:checked_proto": "@com_google_googleapis//google/api/expr/v1alpha1:checked_cc_proto",
     "@com_google_googleapis//google/api/expr/v1alpha1:syntax_proto": "@com_google_googleapis//google/api/expr/v1alpha1:syntax_cc_proto",
+    "@com_google_googleapis//google/pubsub/v1:pubsub_proto": "@com_google_googleapis//google/pubsub/v1:pubsub_cc_proto",
     "@opencensus_proto//opencensus/proto/trace/v1:trace_proto": "@opencensus_proto//opencensus/proto/trace/v1:trace_proto_cc",
     "@opencensus_proto//opencensus/proto/trace/v1:trace_config_proto": "@opencensus_proto//opencensus/proto/trace/v1:trace_config_proto_cc",
 }

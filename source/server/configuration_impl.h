@@ -23,8 +23,6 @@
 #include "common/network/utility.h"
 #include "extensions/grpc_stream_demuxer/config.h"
 
-#include "extensions/grpc_stream_demuxer/config.h"
-
 namespace Envoy {
 namespace Server {
 namespace Configuration {
