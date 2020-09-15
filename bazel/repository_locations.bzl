@@ -156,6 +156,17 @@ DEPENDENCY_REPOSITORIES_SPEC = dict(
         use_category = ["observability"],
         cpe = "N/A",
     ),
+    com_github_cloudevents_sdk = dict(
+        project_name = "CloudEvents SDK",
+        project_url = "https://github.com/googleinterns/cloudevents-sdk-cpp",
+        version = "d9d133fb19430d9896345b4189f35b94a0cf990c",
+        sha256 = "23ff0f3ee649eb1dcf84a126abf2280385cc416cc4eaf67fab6ebd5d892f2966",
+        strip_prefix = "cloudevents-sdk-cpp-{version}",
+        # 2020-09-07
+        urls = ["https://github.com/googleinterns/cloudevents-sdk-cpp/archive/{version}.tar.gz"],
+        use_category = ["dataplane"],
+        cpe = "N/A",
+    ),
     com_github_cyan4973_xxhash = dict(
         project_name = "xxHash",
         project_url = "https://github.com/Cyan4973/xxHash",
@@ -670,6 +681,17 @@ DEPENDENCY_REPOSITORIES_SPEC = dict(
         urls = ["https://github.com/dpkp/kafka-python/archive/{version}.tar.gz"],
         use_category = ["test"],
     ),
+    org_cloudabi_bazel_third_party = dict(
+        project_name = "Cloudabi bazel third party",
+        project_url = "https://github.com/NuxiNL/bazel-third-party",
+        version = "91ca2167219c612a89334fa09ddf15fbdc5d0592",
+        sha256 = "639ac8f97673dcde752f02bc4744409bc68cb1556972946d7818e7a17e141e50",
+        strip_prefix = "bazel-third-party-91ca2167219c612a89334fa09ddf15fbdc5d0592",
+        # 2020-08-15
+        urls = ["https://github.com/NuxiNL/bazel-third-party/archive/91ca2167219c612a89334fa09ddf15fbdc5d0592.tar.gz"],
+        use_category = ["dataplane"],
+        cpe = "N/A",
+    ),
     org_unicode_icuuc = dict(
         project_name = "International Components for Unicode",
         project_url = "https://github.com/unicode-org/icu",
@@ -712,6 +734,16 @@ DEPENDENCY_REPOSITORIES_SPEC = dict(
         strip_prefix = "emsdk-{version}",
         urls = ["https://github.com/emscripten-core/emsdk/archive/{version}.tar.gz"],
         use_category = ["build"],
+    ),
+    rules_proto_grpc = dict(
+        project_name = "Rules proto grpc",
+        project_url = "https://github.com/rules-proto-grpc/rules_proto_grpc",
+        version = "1.0.2",
+        sha256 = "5f0f2fc0199810c65a2de148a52ba0aff14d631d4e8202f41aff6a9d590a471b",
+        strip_prefix = "rules_proto_grpc-1.0.2",
+        urls = ["https://github.com/rules-proto-grpc/rules_proto_grpc/archive/1.0.2.tar.gz"],
+        use_category = ["dataplane"],
+        cpe = "N/A",
     ),
     rules_antlr = dict(
         project_name = "ANTLR Rules for Bazel",

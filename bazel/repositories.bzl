@@ -184,6 +184,7 @@ def envoy_dependencies(skip_targets = []):
     # dependencies and name conflicts.
     _com_github_c_ares_c_ares()
     _com_github_circonus_labs_libcircllhist()
+    _com_github_cloudevents_sdk()
     _com_github_cyan4973_xxhash()
     _com_github_datadog_dd_opentracing_cpp()
     _com_github_mirror_tclap()
@@ -202,6 +203,7 @@ def envoy_dependencies(skip_targets = []):
     _com_github_nelhage_rules_boost()
     _com_github_nghttp2_nghttp2()
     _com_github_nodejs_http_parser()
+    _com_github_rules_proto_grpc()
     _com_github_tencent_rapidjson()
     _com_google_absl()
     _com_google_googletest()
@@ -226,6 +228,7 @@ def envoy_dependencies(skip_targets = []):
     _repository_impl("bazel_compdb")
     _repository_impl("envoy_build_tools")
     _repository_impl("rules_cc")
+    _org_cloudabi_bazel_third_party()
     _org_unicode_icuuc()
 
     # Unconditional, since we use this only for compiler-agnostic fuzzing utils.
@@ -289,6 +292,9 @@ def _com_github_c_ares_c_ares():
         name = "ares",
         actual = "@envoy//bazel/foreign_cc:ares",
     )
+
+def _com_github_cloudevents_sdk():
+    _repository_impl("com_github_cloudevents_sdk")
 
 def _com_github_cyan4973_xxhash():
     _repository_impl(
@@ -474,6 +480,11 @@ def _com_github_datadog_dd_opentracing_cpp():
         name = "dd_opentracing_cpp",
         actual = "@com_github_datadog_dd_opentracing_cpp//:dd_opentracing_cpp",
     )
+
+def _com_github_rules_proto_grpc():
+    # Require rules proto grpc as an indirect dependency as it is needed by the
+    # direct dependency com_github_cloudevents_sdk.
+    _repository_impl("rules_proto_grpc")
 
 def _com_github_tencent_rapidjson():
     _repository_impl(
@@ -923,6 +934,9 @@ filegroup(
         build_file_content = BUILD_ALL_CONTENT,
         **_get_location("kafka_python_client")
     )
+
+def _org_cloudabi_bazel_third_party():
+    _repository_impl("org_cloudabi_bazel_third_party")
 
 def _org_unicode_icuuc():
     _repository_impl(

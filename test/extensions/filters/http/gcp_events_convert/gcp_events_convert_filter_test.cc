@@ -126,9 +126,9 @@ TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithCloudEventEndOfStream) {
   EXPECT_EQ(Http::FilterDataStatus::Continue, filter.decodeData(data, true));
 
   // filter should replace body with given string
-  EXPECT_EQ("certain body string text", buffer.toString());
+  EXPECT_EQ("cloud event data payload", buffer.toString());
   // filter should replace headers content-type with `ce-datecontenttype`
-  EXPECT_EQ("application/text", headers.getContentTypeValue());
+  EXPECT_EQ("application/text; charset=utf-8", headers.getContentTypeValue());
   // filter should insert ce attribute into header (except for `ce-datacontenttype`)
   EXPECT_THAT(headers.get(Http::LowerCaseString("ce-datacontenttype")), testing::IsNull());
   EXPECT_EQ("1.0",
@@ -137,6 +137,10 @@ TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithCloudEventEndOfStream) {
             headers.get(Http::LowerCaseString("ce-type"))->value().getStringView());
   EXPECT_EQ("2020-03-10T03:56:24Z",
             headers.get(Http::LowerCaseString("ce-time"))->value().getStringView());
+  EXPECT_EQ("1234-1234-1234",
+            headers.get(Http::LowerCaseString("ce-id"))->value().getStringView());
+  EXPECT_EQ("/mycontext/subcontext",
+            headers.get(Http::LowerCaseString("ce-source"))->value().getStringView());
 }
 
 TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithRandomBody) {

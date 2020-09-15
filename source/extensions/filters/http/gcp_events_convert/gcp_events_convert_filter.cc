@@ -17,6 +17,8 @@
 #include "common/protobuf/utility.h"
 
 #include "google/pubsub/v1/pubsub.pb.h"
+#include "external/com_github_cloudevents_sdk/v1/protocol_binding/pubsub_binder.h"
+#include "external/com_github_cloudevents_sdk/v1/protocol_binding/http_binder.h"
 
 namespace Envoy {
 namespace Extensions {
@@ -25,6 +27,7 @@ namespace GcpEventsConvert {
 
 using google::pubsub::v1::PubsubMessage;
 using google::pubsub::v1::ReceivedMessage;
+using io::cloudevents::v1::CloudEvent;
 
 GcpEventsConvertFilterConfig::GcpEventsConvertFilterConfig(
     const envoy::extensions::filters::http::gcp_events_convert::v3::GcpEventsConvert& proto_config)
@@ -88,26 +91,25 @@ Http::FilterDataStatus GcpEventsConvertFilter::decodeData(Buffer::Instance&, boo
     return Http::FilterDataStatus::Continue;
   }
 
-  // TODO(#2): Step 5 & 6 Use Cloud Event SDK to convert Pubsub Message to HTTP Binding
-  // HttpRequest http_req = Binder.bind(cloudevents);
-  HttpRequest http_req;
-  http_req.base().set("content-type", "application/text");
-  http_req.base().set("ce-specversion", "1.0");
-  http_req.base().set("ce-type", "com.example.some_event");
-  http_req.base().set("ce-time", "2020-03-10T03:56:24Z");
-  http_req.body() = "certain body string text";
+  const PubsubMessage& pubsub_message = received_message.message();
+  cloudevents::binding::PubsubBinder pubsub_binder;
 
-  absl::Status update_status = updateHeader(http_req);
-  if (!update_status.ok()) {
-    ENVOY_LOG(warn, "Gcp Events Convert Filter log: update header {}", update_status.ToString());
+  cloudevents_absl::StatusOr<CloudEvent> ce = pubsub_binder.Unbind(pubsub_message);
+  if (!ce.ok()) {
+    ENVOY_LOG(warn, "Gcp Events Convert Filter log: SDK pubsub unbind error {}", ce.status());
     return Http::FilterDataStatus::Continue;
   }
 
-  update_status = updateBody(http_req);
-  if (!update_status.ok()) {
-    ENVOY_LOG(warn, "Gcp Events Convert Filter log: update body {}", update_status.ToString());
+  cloudevents::binding::HttpReqBinder http_binder;
+  cloudevents_absl::StatusOr<HttpRequest> req = http_binder.Bind(*ce);
+  if (!req.ok()) {
+    ENVOY_LOG(warn, "Gcp Events Convert Filter log: SDK Http bind error {}", req.status());
     return Http::FilterDataStatus::Continue;
   }
+
+  // update body & header according to output request from SDK
+  updateHeader(*req);
+  updateBody(*req);
 
   return Http::FilterDataStatus::Continue;
 }
@@ -125,7 +127,7 @@ bool GcpEventsConvertFilter::isCloudEvent(const Http::RequestHeaderMap& headers)
   return headers.getContentTypeValue() == config_->content_type_;
 }
 
-absl::Status GcpEventsConvertFilter::updateHeader(const HttpRequest& http_req) {
+void GcpEventsConvertFilter::updateHeader(const HttpRequest& http_req) {
   for (const auto& header : http_req.base()) {
     Http::LowerCaseString header_key(header.name_string().to_string());
     // avoid deep copy from boost string_view to absl string_view
@@ -137,17 +139,15 @@ absl::Status GcpEventsConvertFilter::updateHeader(const HttpRequest& http_req) {
       request_headers_->addCopy(header_key, header_val);
     }
   }
-  return absl::OkStatus();
 }
 
-absl::Status GcpEventsConvertFilter::updateBody(const HttpRequest& http_req) {
+void GcpEventsConvertFilter::updateBody(const HttpRequest& http_req) {
   decoder_callbacks_->modifyDecodingBuffer([&http_req](Buffer::Instance& buffered) {
     // drain the current buffered instance
     buffered.drain(buffered.length());
     // replace the current buffered instance with the new body
     buffered.add(http_req.body());
   });
-  return absl::OkStatus();
 }
 
 } // namespace GcpEventsConvert
