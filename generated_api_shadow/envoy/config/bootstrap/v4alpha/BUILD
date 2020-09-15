@@ -14,6 +14,7 @@ api_proto_package(
         "//envoy/config/metrics/v4alpha:pkg",
         "//envoy/config/overload/v3:pkg",
         "//envoy/config/trace/v4alpha:pkg",
+        "//envoy/extensions/grpc_stream_demuxer/v3alpha:pkg",
         "//envoy/extensions/transport_sockets/tls/v4alpha:pkg",
         "//envoy/type/v3:pkg",
         "@com_github_cncf_udpa//udpa/annotations:pkg",

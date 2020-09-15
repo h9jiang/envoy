@@ -45,6 +45,7 @@ envoy_cc_library(
         "//include/envoy/http:context_interface",
         "//include/envoy/ratelimit:ratelimit_interface",
         "//include/envoy/upstream:cluster_manager_interface",
+        "//source/extensions/grpc_stream_demuxer:config",
         "@envoy_api//envoy/config/bootstrap/v3:pkg_cc_proto",
     ],
 )

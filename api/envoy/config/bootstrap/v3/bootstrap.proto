@@ -13,6 +13,7 @@ import "envoy/config/listener/v3/listener.proto";
 import "envoy/config/metrics/v3/stats.proto";
 import "envoy/config/overload/v3/overload.proto";
 import "envoy/config/trace/v3/http_tracer.proto";
+import "envoy/extensions/grpc_stream_demuxer/v3alpha/grpc_stream_demuxer.proto";
 import "envoy/extensions/transport_sockets/tls/v3/secret.proto";
 import "envoy/type/v3/percent.proto";
 
@@ -40,7 +41,7 @@ option (udpa.annotations.file_status).package_version_status = ACTIVE;
 // <config_overview_bootstrap>` for more detail.
 
 // Bootstrap :ref:`configuration overview <config_overview_bootstrap>`.
-// [#next-free-field: 26]
+// [#next-free-field: 27]
 message Bootstrap {
   option (udpa.annotations.versioning).previous_message_type =
       "envoy.config.bootstrap.v2.Bootstrap";
@@ -234,6 +235,11 @@ message Bootstrap {
   // field.
   // [#not-implemented-hide:]
   map<string, core.v3.TypedExtensionConfig> certificate_provider_instances = 25;
+
+  // Optional grpc_stream_demuxers which allows the user to pull messages from a pubsub
+  // subscription and "demuxes" each message by sending each message individually as
+  // a gRPC request.
+  repeated envoy.extensions.grpc_stream_demuxer.v3alpha.GrpcStreamDemuxer grpc_stream_demuxers = 26;
 }
 
 // Administration interface :ref:`operations documentation

@@ -329,6 +329,38 @@ TEST_F(ConfigurationImplTest, ProtoSpecifiedStatsSink) {
   EXPECT_EQ(1, config.statsSinks().size());
 }
 
+TEST_F(ConfigurationImplTest, ProtoSpecifiedGrpcStreamDemuxer) {
+  std::string json = R"EOF(
+  {
+    "static_resources": {
+      "listeners": [],
+      "clusters": []
+    },
+    "admin": {
+      "access_log_path": "/dev/null",
+      "address": {
+        "socket_address": {
+          "address": "1.2.3.4",
+          "port_value": 5678
+        }
+      }
+    },
+    "grpc_stream_demuxers": {
+      "subscription": "test_subscription",
+      "address": "0.0.0.0",
+      "port": 10001
+    }
+  }
+  )EOF";
+
+  auto bootstrap = Upstream::parseBootstrapFromV3Json(json);
+
+  MainImpl config;
+  config.initialize(bootstrap, server_, cluster_manager_factory_);
+
+  EXPECT_EQ(1, config.grpcStreamDemuxers().size());
+}
+
 TEST_F(ConfigurationImplTest, StatsSinkWithInvalidName) {
   std::string json = R"EOF(
   {

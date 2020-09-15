@@ -7,8 +7,8 @@ namespace Extensions {
 namespace GrpcStreamDemuxer {
 
 /**
- * GrpcStreamDemuxer initiates a streaming pull connection to the subscription 
- * to pull pubsub messages and sends each pubsub message in a grpc request to 
+ * GrpcStreamDemuxer initiates a streaming pull connection to the subscription
+ * to pull pubsub messages and sends each pubsub message in a grpc request to
  * the address and port.
  */
 class GrpcStreamDemuxer : Logger::Loggable<Logger::Id::grpc_stream_demuxer> {

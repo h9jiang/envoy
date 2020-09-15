@@ -4,8 +4,9 @@ namespace Envoy {
 namespace Extensions {
 namespace GrpcStreamDemuxer {
 
-GrpcStreamDemuxer::GrpcStreamDemuxer(const std::string& subscription, const std::string& address, int port) 
-  : subscription_(subscription), address_(address), port_(port) {}
+GrpcStreamDemuxer::GrpcStreamDemuxer(const std::string& subscription, const std::string& address,
+                                     int port)
+    : subscription_(subscription), address_(address), port_(port) {}
 
 void GrpcStreamDemuxer::start() {
   // TODO (vmunukutla): Implement so that it forms a streaming pull connection

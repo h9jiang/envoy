@@ -24,6 +24,7 @@ envoy_cc_library(
     deps = [
         ":grpc_stream_demuxer",
         "//include/envoy/config:typed_config_interface",
+        "@envoy_api//envoy/extensions/grpc_stream_demuxer/v3alpha:pkg_cc_proto",
     ],
 )
 
@@ -31,10 +32,10 @@ envoy_cc_extension(
     name = "config",
     srcs = ["config.cc"],
     hdrs = ["config.h"],
-    deps = [      
-        ":grpc_stream_demuxer_factory_lib",      
-        "//include/envoy/registry",
-    ],
     security_posture = "unknown",
     status = "wip",
+    deps = [
+        ":grpc_stream_demuxer_factory_lib",
+        "//include/envoy/registry",
+    ],
 )

@@ -10,12 +10,9 @@ namespace GrpcStreamDemuxer {
 
 class GrpcStreamDemuxerFactoryImpl : public GrpcStreamDemuxerFactory {
 public:
-  /**
-   * TODO (vmunukutla): Pass in GrpcStreamDemuxer proto as parameter after
-   * fixing current build issues that come with adding GrpcStreamDemuxer proto
-   * to codebase.
-   */
-  GrpcStreamDemuxerPtr createGrpcStreamDemuxer() override;
+  GrpcStreamDemuxerPtr createGrpcStreamDemuxer(
+      const envoy::extensions::grpc_stream_demuxer::v3alpha::GrpcStreamDemuxer& demuxer_config)
+      override;
   std::string name() const override { return "grpc_stream_demuxer"; }
 };
 

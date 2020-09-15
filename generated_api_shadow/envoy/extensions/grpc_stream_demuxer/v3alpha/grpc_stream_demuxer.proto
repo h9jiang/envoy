@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package envoy.extensions.grpc_stream_demuxer.v3alpha;
+
+import "udpa/annotations/migrate.proto";
+import "udpa/annotations/status.proto";
+
+option java_package = "io.envoyproxy.envoy.extensions.grpc_stream_demuxer.v3alpha";
+option java_outer_classname = "GrpcStreamDemuxerProto";
+option java_multiple_files = true;
+option (udpa.annotations.file_status).work_in_progress = true;
+option (udpa.annotations.file_status).package_version_status = ACTIVE;
+
+// This configuration is used to populate a GrpcStreamDemuxer
+// object. Configured in the top level of a yaml config file to specify
+// GrpcStreamDemuxer attributes.
+message GrpcStreamDemuxer {
+  // Pubsub pull subscription to initiate a streaming pull.
+  string subscription = 1;
+
+  // Address to which grpc unary requests are sent to.
+  // Should match listener address.
+  string address = 2;
+
+  // Port to which grpc unary requests are sent to.
+  // Should match listener port.
+  uint32 port = 3;
+}
