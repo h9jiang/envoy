@@ -216,6 +216,33 @@ TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithRandomBody) {
   EXPECT_EQ(Http::FilterDataStatus::Continue, filter.decodeData(data2, true));
 }
 
+// Unit test for Encode Headers
+TEST(GcpEventsConvertFilterUnitTest, EncoderHeaderWithNoCloudEvent) {
+  envoy::extensions::filters::http::gcp_events_convert::v3::GcpEventsConvert config;
+  config.set_content_type("application/grpc+cloudevent+json");
+  GcpEventsConvertFilter filter(std::make_shared<GcpEventsConvertFilterConfig>(config),
+                                /*has_cloud_event=*/false,
+                                /*headers =*/nullptr);
+  Http::TestResponseHeaderMapImpl headers(
+      {{"content-type", "application/grpc+cloudevent+json"}, {"content-length", "100"}});
+
+  EXPECT_EQ(Http::FilterHeadersStatus::Continue, filter.encodeHeaders(headers, false));
+}
+
+TEST(GcpEventsConvertFilterUnitTest, EncoderHeaderWithCloudEvent) {
+  envoy::extensions::filters::http::gcp_events_convert::v3::GcpEventsConvert config;
+  config.set_content_type("application/grpc+cloudevent+json");
+  GcpEventsConvertFilter filter(std::make_shared<GcpEventsConvertFilterConfig>(config),
+                                /*has_cloud_event=*/true,
+                                /*headers =*/nullptr);
+  Http::TestResponseHeaderMapImpl headers(
+      {{"content-type", "application/html"}, {"content-length", "100"}});
+
+  EXPECT_EQ(Http::FilterHeadersStatus::Continue, filter.encodeHeaders(headers, false));
+}
+
+// Unit test for Encode Data
+
 } // namespace GcpEventsConvert
 } // namespace HttpFilters
 } // namespace Extensions
