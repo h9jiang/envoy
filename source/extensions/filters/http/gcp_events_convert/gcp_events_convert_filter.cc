@@ -152,11 +152,11 @@ void GcpEventsConvertFilter::updateHeader(const HttpRequest& http_req) {
 }
 
 void GcpEventsConvertFilter::updateBody(const HttpRequest& http_req,
-                                        const Buffer::Instance* bufferedPtr,
+                                        const Buffer::Instance* buffered_ptr,
                                         Buffer::Instance& buffer) {
   // drain the current buffer instance
   buffer.drain(buffer.length());
-  if (bufferedPtr) {
+  if (buffered_ptr) {
     // replace buffered instance with http result from SDK
     decoder_callbacks_->modifyDecodingBuffer([&http_req](Buffer::Instance& buffered) {
       // drain the buffered instance
