@@ -57,14 +57,11 @@ private:
   // modify the data of HTTP request
   // 1. drain buffered data
   // 2. write cloud event data
-  void updateBody(const HttpRequest& http_req,
-                  const Buffer::Instance* bufferedPtr,
-                  Buffer::Instance& buffer);
+  void updateBody(const HttpRequest& http_req, Buffer::Instance& buffer);
 
   // modify the header of HTTP request
   // 1. replace header's content type with ce-datacontenttype
   // 2. add cloud event information, ce-version, ce-type...... (except ce's data)
-  // 3. [TBD] add Ack ID into header
   void updateHeader(const HttpRequest& request);
 
   Http::RequestHeaderMap* request_headers_ = nullptr;

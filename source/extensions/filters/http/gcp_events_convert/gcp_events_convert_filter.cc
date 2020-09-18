@@ -102,7 +102,7 @@ Http::FilterDataStatus GcpEventsConvertFilter::decodeData(Buffer::Instance& buff
 
   // update body & header according to output request from SDK
   updateHeader(*req);
-  updateBody(*req, buffered, buffer);
+  updateBody(*req, buffer);
 
   return Http::FilterDataStatus::Continue;
 }
@@ -152,20 +152,19 @@ void GcpEventsConvertFilter::updateHeader(const HttpRequest& http_req) {
 }
 
 void GcpEventsConvertFilter::updateBody(const HttpRequest& http_req,
-                                        const Buffer::Instance* buffered_ptr,
-                                        Buffer::Instance& buffer) {
+                                        Buffer::Instance& last_data) {
   // drain the current buffer instance
-  buffer.drain(buffer.length());
-  if (buffered_ptr) {
+  last_data.drain(last_data.length());
+  if (decoder_callbacks_->decodingBuffer()) {
     // replace buffered instance with http result from SDK
-    decoder_callbacks_->modifyDecodingBuffer([&http_req](Buffer::Instance& buffered) {
+    decoder_callbacks_->modifyDecodingBuffer([&http_req](Buffer::Instance& decoding_buffer) {
       // drain the buffered instance
-      buffered.drain(buffered.length());
-      buffered.add(http_req.body());
+      decoding_buffer.drain(decoding_buffer.length());
+      decoding_buffer.add(http_req.body());
     }); 
   } else {
     // replace current buffer instance with http result from SDK
-    buffer.add(http_req.body());
+    last_data.add(http_req.body());
   }
 }
 

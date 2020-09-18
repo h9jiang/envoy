@@ -90,7 +90,7 @@ TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithCloudEventEndOfStream) {
 
   // buffer simulate the buffered data and will be set manually
   Buffer::OwnedImpl buffer;
-  EXPECT_CALL(callbacks, decodingBuffer).Times(1).WillOnce(testing::Return(&buffer));
+  EXPECT_CALL(callbacks, decodingBuffer).Times(2).WillRepeatedly(testing::Return(&buffer));
   EXPECT_CALL(callbacks, modifyDecodingBuffer)
       .Times(1)
       .WillOnce([&buffer](std::function<void(Buffer::Instance&)> callback) {
@@ -153,7 +153,7 @@ TEST(GcpEventsConvertFilterUnitTest, DecodeDataWithCloudEventOnePiece) {
   Http::MockStreamDecoderFilterCallbacks callbacks;
   filter.setDecoderFilterCallbacks(callbacks);
 
-  EXPECT_CALL(callbacks, decodingBuffer).Times(1).WillOnce(testing::Return(nullptr));
+  EXPECT_CALL(callbacks, decodingBuffer).Times(2).WillRepeatedly(testing::Return(nullptr));
   EXPECT_CALL(callbacks, modifyDecodingBuffer).Times(0);
 
   // create a received message proto object
